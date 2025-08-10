@@ -35,13 +35,11 @@ class BugReportService:
             BugReporterError: If the process fails
         """
         try:
-            # Generate the bug report using the LLM service
-            bug_report = self.llm_service.generate_bug_report(user_input)
+            bug_report: BugReport = self.llm_service.generate_bug_report(user_input)
 
             if bug_report is None:
                 return None
 
-            # Format the bug report
             formatted_report = self.formatter.format(bug_report)
 
             return formatted_report

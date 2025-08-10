@@ -16,10 +16,13 @@ RUN pip install --upgrade pip setuptools wheel
 # Copy project configuration files first for better Docker layer caching
 COPY pyproject.toml .
 COPY requirements.txt .
+COPY requirements-dev.txt .
 COPY README.md .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install the package in development mode
 RUN pip install --no-cache-dir -e .
 
 # Copy the application code
@@ -35,15 +38,12 @@ USER app
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Expose port (if your app will have a web interface later)
-EXPOSE 8000
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import src; print('OK')" || exit 1
+    CMD python -c "from src.core import models; print('OK')" || exit 1
 
-# Set the entrypoint
-ENTRYPOINT ["python", "-m", "src"]
+# Default entrypoint uses main.py for direct execution
+ENTRYPOINT ["python", "main.py"]
 
-# Default command (can be overridden)
+# Default help command (can be overridden)
 CMD ["--help"]
