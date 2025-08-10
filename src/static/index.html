@@ -2,156 +2,367 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bug Report Generator</title>
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bug Report Composer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Small extra styling for nice scrollbar and textarea monospace */
+    textarea::-webkit-scrollbar { height: 10px; width: 10px; }
+    textarea::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
+    .prose-pre { white-space: pre-wrap; }
+  </style>
 </head>
-<body>
-  <div class="app-grid">
-    <header class="app-header" role="banner">
-      <div>
-        <h1>Bug Report Generator</h1>
-        <p class="subtitle">Write a description and it will generate a detailed and formatted bug report for you.</p>
-      </div>
-    </header>
-
-    <section class="app-form" aria-labelledby="form-heading">
-      <h2 id="form-heading" class="form-title">Problem Description</h2>
-
-      <form id="bugForm" autocomplete="off">
-        <div class="form-grid">
-          <label class="field full">
-            <textarea name="user_input" rows="8" placeholder="Describe what you encountered..." required></textarea>
-            <button type="reset" class="btn-clear">Clear</button>
-          </label>
+<body class="bg-gray-50 text-gray-800 antialiased">
+  <div class="min-h-screen flex items-start justify-center py-10 px-4">
+    <div class="w-full max-w-6xl">
+      <!-- Header -->
+      <header class="mb-6 flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-slate-900">Bug Report Composer</h1>
+          <p class="text-sm text-slate-500 mt-1">Turn raw QA notes into a clean, structured bug report.</p>
         </div>
-
-        <div class="actions">
-          <button type="submit" class="btn primary" id="generateBtn">Generate</button>
+        <div class="flex items-center gap-3">
+          <button id="clearAll" class="text-xs px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Clear All</button>
+          <a href="https://github.com/danielPashht" target="_blank" rel="noopener noreferrer" class="text-xs px-3 py-1 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition-colors">GitHub</a>
+          <a href="#" class="text-xs text-slate-500">Help</a>
         </div>
-      </form>
-    </section>
+      </header>
 
-    <aside class="app-output" aria-labelledby="output-heading">
-      <h2 id="output-heading" class="output-title">Generated Report</h2>
+      <!-- Main grid -->
+      <main class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <!-- Input card (spans 2 cols on wide screens) -->
+        <section class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-100 p-5 flex flex-col">
+          <label for="rawInput" class="text-sm font-medium text-slate-700 mb-2">Raw bug notes</label>
+          <textarea id="rawInput" rows="12" placeholder="Paste raw reproduction notes, console logs, environment here..." class="resize-y w-full rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300" ></textarea>
 
-      <div class="output-container">
-        <div class="output-window" tabindex="0" role="region" aria-label="Generated bug report">
-          <pre id="generatedText" class="generated-text" contenteditable="false">
-<!-- Generated report will appear here -->
-          </pre>
-        </div>
-        <button class="btn-clear" id="copyBtn" aria-label="Copy generated report">Copy</button>
-      </div>
+          <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <!-- Severity and Environment fields removed -->
+            </div>
 
-      <div class="output-status-container">
-        <span class="output-status" aria-live="polite"></span>
-      </div>
-    </aside>
+            <div class="flex items-center gap-2">
+              <button id="generateBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-300 disabled:opacity-70">
+                <svg id="genSpinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                <span id="genLabel">Generate</span>
+              </button>
 
-    <footer class="app-footer">
-      <small>AI-powered bug report generation</small>
-      <a href="https://github.com/danielPashht" target="_blank" rel="noopener noreferrer" class="btn small github-btn">
-        Github
-      </a>
-    </footer>
+              <button id="clearInput" class="px-3 py-2 text-sm rounded-md border border-slate-200 bg-white hover:bg-slate-50">Clear</button>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs text-slate-500">
+            Tip: paste logs, steps, or quick notes — the generator will try to structure them into Title, Steps, Expected, Actual, Environment and Suggested Fix.
+          </div>
+        </section>
+
+        <!-- Output card -->
+        <aside class="bg-white rounded-xl shadow-sm border border-slate-100 p-5 flex flex-col">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="text-sm font-medium text-slate-800">Generated report</h2>
+              <p class="text-xs text-slate-500 mt-1">Copy, download or refine before sending to devs.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="copyBtn" class="text-sm px-3 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50">Copy</button>
+              <button id="downloadBtn" class="text-sm px-3 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50">Download</button>
+            </div>
+          </div>
+
+          <textarea id="output" class="mt-3 h-64 w-full rounded-md border border-slate-200 bg-gray-900 text-green-100 p-4 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-300" readonly aria-live="polite" ></textarea>
+
+          <div class="mt-3 flex items-center justify-between gap-3 text-xs">
+            <div class="text-slate-500">Format: Markdown-ready, copyable.</div>
+            <div class="flex items-center gap-2">
+              <button id="clearOutput" class="px-3 py-1 rounded-md text-slate-700 bg-white border border-slate-200 hover:bg-slate-50">Clear</button>
+              <button id="expandBtn" class="px-3 py-1 rounded-md text-slate-700 bg-white border border-slate-200 hover:bg-slate-50">Expand</button>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
   </div>
 
   <script>
-    const form = document.getElementById('bugForm');
-    const generatedText = document.getElementById('generatedText');
-    const status = document.querySelector('.output-status');
-    const copyBtn = document.getElementById('copyBtn');
+    // Elements
+    const rawInput = document.getElementById('rawInput');
     const generateBtn = document.getElementById('generateBtn');
+    const genSpinner = document.getElementById('genSpinner');
+    const genLabel = document.getElementById('genLabel');
+    const output = document.getElementById('output');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const clearInput = document.getElementById('clearInput');
+    const clearOutput = document.getElementById('clearOutput');
+    const expandBtn = document.getElementById('expandBtn');
+    const clearAll = document.getElementById('clearAll');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // Utility: parse raw notes for common sections
+    function parseSections(text) {
+      const result = {
+        title: '',
+        steps: '',
+        expected: '',
+        actual: '',
+        environment: '',
+        logs: '',
+        suggested: ''
+      };
 
-      const formData = new FormData(form);
-      const userInput = formData.get('user_input');
+      const normalized = text.replace(/\r/g, '');
+      // split into blocks by blank line
+      const blocks = normalized.split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
 
-      if (!userInput || userInput.trim() === '') {
-        status.textContent = 'Please enter a bug description';
-        setTimeout(() => status.textContent = '', 3000);
+      // helper to detect labels
+      function extractByLabel(label) {
+        const regex = new RegExp(label + '\\s*[:\\-]\\s*([\\s\\S]+)', 'i');
+        const match = text.match(regex);
+        return match && match[1] ? match[1].trim() : '';
+      }
+
+      // Try to find explicit labeled sections first
+      result.title = extractByLabel('title') || '';
+      result.steps = extractByLabel('steps?') || '';
+      result.expected = extractByLabel('expected') || '';
+      result.actual = extractByLabel('actual') || '';
+      result.environment = extractByLabel('environment|env|platform') || '';
+      result.logs = extractByLabel('logs?|console') || '';
+
+      // If no explicit labels, attempt heuristics
+      if (!result.title && blocks.length) {
+        // Use first short line or first line as title
+        const firstLine = blocks[0].split('\n')[0];
+        if (firstLine.length < 80 && firstLine.split(' ').length <= 10) {
+          result.title = firstLine;
+          // remove title from first block for steps
+          blocks[0] = blocks[0].replace(firstLine, '').trim();
+        }
+      }
+
+      if (!result.steps) {
+        // Try to find lines starting with numbers or "1." or "Step"
+        let lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        const stepLines = lines.filter(l => /^\d+\.|^step\s*\d+|^steps?/i.test(l));
+        if (stepLines.length >= 2) {
+          result.steps = stepLines.join('\n');
+        } else {
+          // as fallback use first block (minus title) as steps-ish
+          if (blocks.length) {
+            result.steps = blocks[0];
+          }
+        }
+      }
+
+      if (!result.expected || !result.actual) {
+        // try to split remaining content into expected/actual using keywords
+        const lower = text.toLowerCase();
+        const idxExpected = lower.indexOf('expected');
+        const idxActual = lower.indexOf('actual');
+        if (idxExpected >= 0 && idxActual >= 0) {
+          if (idxExpected < idxActual) {
+            result.expected = text.slice(idxExpected, idxActual).replace(/expected[:\-]/i, '').trim();
+            result.actual = text.slice(idxActual).replace(/actual[:\-]/i, '').trim();
+          } else {
+            result.actual = text.slice(idxActual, idxExpected).replace(/actual[:\-]/i, '').trim();
+            result.expected = text.slice(idxExpected).replace(/expected[:\-]/i, '').trim();
+          }
+        }
+      }
+
+      // fallback: if expected/actual missing, put a short placeholder
+      if (!result.expected) result.expected = 'Describe the expected behavior.';
+      if (!result.actual) result.actual = 'Describe the actual behavior observed.';
+
+      // environment fallback
+      if (!result.environment) {
+        result.environment = 'Specify browser / OS / app version.';
+      }
+
+      // logs fallback
+      if (!result.logs) {
+        // take last block as logs if it contains words like error/stack
+        const lastBlock = blocks[blocks.length - 1] || '';
+        if (/error|stack|trace|exception/i.test(lastBlock)) {
+          result.logs = lastBlock;
+        } else {
+          result.logs = '';
+        }
+      }
+
+      // suggested fix tries to infer from keywords
+      if (/crash|exception|throw/i.test(text)) {
+        result.suggested = 'Investigate exception stack, validate input sanitization and null-checks.';
+      } else if (/ui|layout|overlap/i.test(text)) {
+        result.suggested = 'Adjust CSS layout or responsive breakpoints; verify container sizes.';
+      } else {
+        result.suggested = '';
+      }
+
+      return result;
+    }
+
+    // Compose markdown-like report
+    function composeReport(raw) {
+      if (!raw || !raw.trim()) {
+        return '';
+      }
+      const sections = parseSections(raw);
+
+      // Build Title
+      const title = sections.title || (raw.split('\n').find(l => l.trim()) || 'Untitled bug').slice(0, 150);
+
+      // Steps: ensure lines are bulleted or numbered
+      function formatSteps(text) {
+        if (!text) return '';
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        // If already numbered, keep them; else create numbered steps
+        const numbered = lines.every(l => /^\d+\./.test(l));
+        if (numbered) return lines.join('\n');
+        // split on sentence-ish punctuation if a single long block
+        if (lines.length === 1 && lines[0].length > 80) {
+          const sentences = lines[0].split(/(?<=\.)\s+/).map(s => s.trim()).filter(Boolean);
+          return sentences.map((s,i) => `${i+1}. ${s}`).join('\n');
+        }
+        return lines.map((l,i) => `${i+1}. ${l}`).join('\n');
+      }
+
+      const reportParts = [
+        `# ${escapeMarkdown(title)}`,
+        '',
+        `**Environment:** ${escapeMarkdown(sections.environment)}`,
+        '',
+        `## Summary`,
+        `${escapeMarkdown(raw.split('\n').slice(0,3).join(' ').trim())}`,
+        '',
+        `## Steps to Reproduce`,
+        formatSteps(sections.steps) || '1. Describe steps to reproduce',
+        '',
+        `## Expected Result`,
+        `${escapeMarkdown(sections.expected)}`,
+        '',
+        `## Actual Result`,
+        `${escapeMarkdown(sections.actual)}`,
+        ''
+      ];
+
+      if (sections.logs) {
+        reportParts.push('## Logs / Console');
+        reportParts.push('```');
+        reportParts.push(sections.logs);
+        reportParts.push('```');
+        reportParts.push('');
+      }
+
+      if (sections.suggested) {
+        reportParts.push('## Suggested Fix');
+        reportParts.push(sections.suggested);
+        reportParts.push('');
+      }
+
+      reportParts.push('---');
+      reportParts.push('*Generated by Bug Report Composer*');
+
+      return reportParts.join('\n');
+    }
+
+    function escapeMarkdown(s) {
+      if (!s) return '';
+      return s.replace(/([_*`])/g, '\\$1');
+    }
+
+    // Handlers
+    generateBtn.addEventListener('click', async () => {
+      const text = rawInput.value;
+      if (!text.trim()) {
+        rawInput.focus();
+        rawInput.setAttribute('aria-invalid', 'true');
+        rawInput.style.borderColor = '#f97316'; // orange
+        setTimeout(() => {
+          rawInput.removeAttribute('aria-invalid');
+          rawInput.style.borderColor = '';
+        }, 1200);
         return;
       }
-
-      // Disable button and show loading state
       generateBtn.disabled = true;
-      generateBtn.textContent = 'Generating...';
-      status.textContent = 'Generating bug report...';
-      generatedText.textContent = '';
+      genSpinner.classList.remove('hidden');
+      genLabel.textContent = 'Generating...';
 
+      // Simulate processing delay; in a real app you'd call an API here
+      await new Promise(r => setTimeout(r, 650));
+
+      const report = composeReport(text);
+      output.value = report;
+      output.scrollTop = 0;
+
+      genSpinner.classList.add('hidden');
+      genLabel.textContent = 'Generate';
+      generateBtn.disabled = false;
+      output.focus();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      if (!output.value.trim()) return;
       try {
-        const response = await fetch('/api/v1/bug-reports', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_input: userInput.trim()
-          })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        // Display the formatted report
-        generatedText.textContent = data.formatted_report || `
-Title: ${data.title}
-
-Description: ${data.description}
-
-Steps to Reproduce:
-${data.steps}
-
-Expected Result:
-${data.expected_result}
-
-Actual Result:
-${data.actual_result}
-        `.trim();
-
-        status.textContent = 'Generated successfully!';
-        setTimeout(() => status.textContent = '', 3000);
-
-        // Focus output for easy copy
-        document.querySelector('.output-window').focus();
-
-      } catch (error) {
-        console.error('Error generating bug report:', error);
-        status.textContent = `Error: ${error.message}`;
-        generatedText.textContent = 'Failed to generate bug report. Please try again.';
-        setTimeout(() => status.textContent = '', 5000);
-      } finally {
-        // Re-enable button
-        generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate';
+        await navigator.clipboard.writeText(output.value);
+        copyBtn.textContent = 'Copied';
+        copyBtn.classList.add('bg-emerald-50');
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy';
+          copyBtn.classList.remove('bg-emerald-50');
+        }, 1400);
+      } catch (e) {
+        // fallback
+        output.select();
+        document.execCommand('copy');
       }
     });
 
-    // Copy functionality
-    copyBtn.addEventListener('click', () => {
-      const text = generatedText.textContent;
-      if (text && text.trim() !== '' && text.trim() !== '<!-- Generated report will appear here -->') {
-        navigator.clipboard.writeText(text).then(() => {
-          status.textContent = 'Copied!';
-          setTimeout(() => status.textContent = '', 2000);
-        }).catch(() => {
-          status.textContent = 'Copy failed';
-          setTimeout(() => status.textContent = '', 2000);
-        });
+    downloadBtn.addEventListener('click', () => {
+      if (!output.value.trim()) return;
+      const blob = new Blob([output.value], {type: 'text/markdown;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const fileName = (output.value.split('\n')[0] || 'bug-report').replace(/[^a-z0-9-_]/gi, '-').toLowerCase().slice(0,50) || 'bug-report';
+      a.download = `${fileName}.md`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    clearInput.addEventListener('click', () => {
+      rawInput.value = '';
+      rawInput.focus();
+    });
+
+    clearOutput.addEventListener('click', () => {
+      output.value = '';
+    });
+
+    expandBtn.addEventListener('click', () => {
+      if (output.style.height === '100vh') {
+        output.style.height = '';
+        expandBtn.textContent = 'Expand';
+      } else {
+        output.style.height = '100vh';
+        expandBtn.textContent = 'Collapse';
       }
     });
 
-    // Reset functionality
-    form.addEventListener('reset', () => {
-      generatedText.textContent = '';
-      status.textContent = '';
+    clearAll.addEventListener('click', () => {
+      rawInput.value = '';
+      output.value = '';
+    });
+
+    // Keyboard shortcut: Ctrl/Cmd+Enter to generate
+    rawInput.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        generateBtn.click();
+      }
     });
   </script>
 </body>
