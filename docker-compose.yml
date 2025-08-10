@@ -1,0 +1,14 @@
+# Docker Compose for Bug Reporter application
+version: '3.8'
+services:
+  bug-reporter:
+    build: .
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
+      - MAX_RETRIES=${MAX_RETRIES:-3}
+    volumes:
+      - .env:/app/.env:ro
+    stdin_open: true
+    tty: true
+
