@@ -2,14 +2,16 @@
 
 from dataclasses import dataclass
 from typing import Dict, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class BugReportSchema(BaseModel):
     """Pydantic schema for structured Gemini responses."""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     title: str
-    description_of_the_issue: str
+    description_of_the_issue: str = Field(alias="description")
     steps: str
     expected_result: str
     actual_result: str

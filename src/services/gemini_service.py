@@ -39,6 +39,7 @@ class GeminiService(LLMService):
                 generation_config = genai.GenerationConfig(
                     response_mime_type="application/json",
                     response_schema=BugReportSchema,
+                    temperature=0.1,
                 )
 
                 model = genai.GenerativeModel(
@@ -50,11 +51,14 @@ class GeminiService(LLMService):
 
                 try:
                     # Parse the structured response directly
-                    bug_schema = BugReportSchema.model_validate_json(response.text)
+                    bug_schema = BugReportSchema.model_validate_json(response.text.strip())
                     bug_report = BugReport.from_schema(bug_schema)
 
-                    # Validate the bug report
-                    if bug_report.validate():
+                    if (
+                            bug_report.title.strip() and
+                            bug_report.description.strip() and
+                            bug_report.steps.strip()
+                    ):
                         return bug_report
                     else:
                         print(f"Attempt {attempt + 1}: Generated bug report has empty fields, retrying...")

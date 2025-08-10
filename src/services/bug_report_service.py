@@ -39,7 +39,6 @@ class BugReportService:
 
             if bug_report is None:
                 return None
-
             formatted_report = self.formatter.format(bug_report)
 
             return formatted_report
