@@ -1,6 +1,6 @@
 # Bug Reporter
 
-A sophisticated bug reporting tool that transforms user descriptions into structured, professional bug reports using AI. Available as both a CLI tool and REST API.
+A reporting tool that transforms user bug descriptions into structured and concise bug reports with AI. Available as both a CLI tool and REST API.
 
 ## Features
 
