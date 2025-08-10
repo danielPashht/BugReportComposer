@@ -26,5 +26,6 @@ class BugReportPrompts:
                 
                 User input: {user_input}
                 Ensure all fields are present and are strings.
+                Title: Aim for a length of 20-50 characters, avoid generic titles. The title should include keywords that describe the issue and relevant context like "what," "where," and "when". 
                 If any field is missing or not a string, return an error message in JSON format.
                 Focus on clarity and completeness. If any information is missing from the user input, make reasonable assumptions or indicate where information might be incomplete."""
