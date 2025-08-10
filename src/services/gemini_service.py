@@ -2,12 +2,14 @@
 from typing import Optional
 import json
 import google.generativeai as genai
+from pydantic import ValidationError
 
 from ..core.interfaces import LLMService
 from ..core.models import BugReport
 from ..core.exceptions import LLMServiceError
 from ..config import settings
 from ..prompts import BugReportPrompts
+from ..schemas.bug_report import BugReportSchema
 
 
 class GeminiService(LLMService):
@@ -63,8 +65,17 @@ class GeminiService(LLMService):
                     # Parse JSON
                     data = json.loads(response_text)
                     
-                    # Create BugReport from the parsed data
-                    bug_report = BugReport.from_dict(data)
+                    # Validate using Pydantic schema
+                    validated_data = BugReportSchema(**data)
+
+                    # Create BugReport from the validated data
+                    bug_report = BugReport(
+                        title=validated_data.title,
+                        description=validated_data.description_of_the_issue,
+                        steps=validated_data.steps,
+                        expected_result=validated_data.expected_result,
+                        actual_result=validated_data.actual_result
+                    )
 
                     if (
                             bug_report.title.strip() and
@@ -76,8 +87,8 @@ class GeminiService(LLMService):
                         print(f"Attempt {attempt + 1}: Generated bug report has empty fields, retrying...")
                         continue
                         
-                except (json.JSONDecodeError, KeyError) as e:
-                    print(f"Attempt {attempt + 1}: JSON parsing failed - {e}")
+                except (json.JSONDecodeError, ValidationError) as e:
+                    print(f"Attempt {attempt + 1}: Schema validation failed - {e}")
                     if attempt == self.max_retries - 1:
                         print("Raw response that failed parsing:")
                         print(response.text)
