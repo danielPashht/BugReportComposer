@@ -1,10 +1,9 @@
 """Gemini AI service implementation."""
-import json
 from typing import Optional
 import google.generativeai as genai
 
 from ..core.interfaces import LLMService
-from ..core.models import BugReport
+from ..core.models import BugReport, BugReportSchema
 from ..core.exceptions import LLMServiceError
 from ..config import settings
 from ..prompts import BugReportPrompts
@@ -22,8 +21,8 @@ class GeminiService(LLMService):
     
     def generate_bug_report(self, user_input: str) -> Optional[BugReport]:
         """
-        Generate a structured bug report from user input using Gemini API.
-        
+        Generate a structured bug report from user input using Gemini API with schema validation.
+
         Args:
             user_input: The user's description of the bug
             
@@ -37,32 +36,35 @@ class GeminiService(LLMService):
         
         for attempt in range(self.max_retries):
             try:
-                response = genai.GenerativeModel(self.model_name).generate_content(prompt)
-                content = response.text.strip()
-                
-                # Clean up potential markdown code block
-                if content.startswith("```json"):
-                    content = content.removeprefix("```json").strip()
-                if content.endswith("```"):
-                    content = content.removesuffix("```").strip()
-                
-                # Parse JSON and create BugReport
+                generation_config = genai.GenerationConfig(
+                    response_mime_type="application/json",
+                    response_schema=BugReportSchema,
+                )
+
+                model = genai.GenerativeModel(
+                    self.model_name,
+                    generation_config=generation_config
+                )
+
+                response = model.generate_content(prompt)
+
                 try:
-                    bug_data = json.loads(content)
-                    bug_report = BugReport.from_dict(bug_data)
-                    
+                    # Parse the structured response directly
+                    bug_schema = BugReportSchema.model_validate_json(response.text)
+                    bug_report = BugReport.from_schema(bug_schema)
+
                     # Validate the bug report
                     if bug_report.validate():
                         return bug_report
                     else:
-                        print(f"Attempt {attempt + 1}: Invalid bug report structure, retrying...")
+                        print(f"Attempt {attempt + 1}: Generated bug report has empty fields, retrying...")
                         continue
                         
-                except json.JSONDecodeError as e:
-                    print(f"Attempt {attempt + 1}: JSON parsing failed - {e}")
+                except Exception as e:
+                    print(f"Attempt {attempt + 1}: Schema validation failed - {e}")
                     if attempt == self.max_retries - 1:
-                        print("Raw response that failed to parse:")
-                        print(content)
+                        print("Raw response that failed validation:")
+                        print(response.text)
                     continue
                     
             except Exception as e:
