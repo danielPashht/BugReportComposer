@@ -1,9 +1,10 @@
 """Gemini AI service implementation."""
 from typing import Optional
+import json
 import google.generativeai as genai
 
 from ..core.interfaces import LLMService
-from ..core.models import BugReport, BugReportSchema
+from ..core.models import BugReport
 from ..core.exceptions import LLMServiceError
 from ..config import settings
 from ..prompts import BugReportPrompts
@@ -21,7 +22,7 @@ class GeminiService(LLMService):
     
     def generate_bug_report(self, user_input: str) -> Optional[BugReport]:
         """
-        Generate a structured bug report from user input using Gemini API with schema validation.
+        Generate a structured bug report from user input using Gemini API with JSON parsing.
 
         Args:
             user_input: The user's description of the bug
@@ -37,8 +38,6 @@ class GeminiService(LLMService):
         for attempt in range(self.max_retries):
             try:
                 generation_config = genai.GenerationConfig(
-                    response_mime_type="application/json",
-                    response_schema=BugReportSchema,
                     temperature=0.1,
                 )
 
@@ -50,9 +49,22 @@ class GeminiService(LLMService):
                 response = model.generate_content(prompt)
 
                 try:
-                    # Parse the structured response directly
-                    bug_schema = BugReportSchema.model_validate_json(response.text.strip())
-                    bug_report = BugReport.from_schema(bug_schema)
+                    # Parse the JSON response
+                    response_text = response.text.strip()
+                    
+                    # Remove any markdown code block markers if present
+                    if response_text.startswith("```json"):
+                        response_text = response_text[7:]
+                    if response_text.endswith("```"):
+                        response_text = response_text[:-3]
+                    
+                    response_text = response_text.strip()
+                    
+                    # Parse JSON
+                    data = json.loads(response_text)
+                    
+                    # Create BugReport from the parsed data
+                    bug_report = BugReport.from_dict(data)
 
                     if (
                             bug_report.title.strip() and
@@ -64,10 +76,10 @@ class GeminiService(LLMService):
                         print(f"Attempt {attempt + 1}: Generated bug report has empty fields, retrying...")
                         continue
                         
-                except Exception as e:
-                    print(f"Attempt {attempt + 1}: Schema validation failed - {e}")
+                except (json.JSONDecodeError, KeyError) as e:
+                    print(f"Attempt {attempt + 1}: JSON parsing failed - {e}")
                     if attempt == self.max_retries - 1:
-                        print("Raw response that failed validation:")
+                        print("Raw response that failed parsing:")
                         print(response.text)
                     continue
                     

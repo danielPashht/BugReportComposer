@@ -13,17 +13,18 @@ class BugReportPrompts:
         Returns:
             Formatted prompt for the LLM
         """
-        return f"""You are a bug report formatter. Analyze the following user input and create a structured bug report.
-
+        return f"""You are a bug report formatter.
+                You must respond ONLY with valid JSON in the following structure:
+                {{
+                  "Title": "string",
+                  "Description of the issue": "string", 
+                  "Steps": "string",
+                  "Expected result": "string",
+                  "Actual result": "string"
+                }}
+                Do not include any text outside JSON.
+                
                 User input: {user_input}
-                
-                Provide:
-                - A clear, concise title for the bug
-                - A detailed description of the issue
-                - Step-by-step reproduction instructions, start with an action verb, and be testable actions.
-                - What the user expected to happen
-                - What actually happened
-                
-                Focus on clarity and completeness. 
-                Rewrite vague steps into explicit actions (only if it possible without additional context).
-                """
+                Ensure all fields are present and are strings.
+                If any field is missing or not a string, return an error message in JSON format.
+                Focus on clarity and completeness. If any information is missing from the user input, make reasonable assumptions or indicate where information might be incomplete."""

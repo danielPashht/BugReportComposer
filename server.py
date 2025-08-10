@@ -1,4 +1,5 @@
-"""Script to run the FastAPI server."""
+#!/usr/bin/env python3
+"""Simple server startup script for the Bug Reporter API."""
 
 import uvicorn
 from src.api.app import app
