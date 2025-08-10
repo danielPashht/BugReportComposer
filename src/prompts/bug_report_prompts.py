@@ -13,7 +13,7 @@ class BugReportPrompts:
         Returns:
             Formatted prompt for the LLM
         """
-        return f"""You are a bug report formatter.
+        return f"""You are a bug report generator.
                 You must respond ONLY with valid JSON in the following structure:
                 {{
                   "Title": "string",
@@ -22,10 +22,16 @@ class BugReportPrompts:
                   "Expected result": "string",
                   "Actual result": "string"
                 }}
-                Do not include any text outside JSON.
+                DO NOT include any text outside JSON!
+                FORMAT RULES:
+                1. Ensure all fields are present and are strings.
+                2. If any field is missing or not a string, return an error message in JSON format.
+                STYLE RULES:
+                1. Title should be brief, concise and 20-50 characters length 
+                2. Focus on clarity and completeness. If any information is missing from the user input, 
+                make reasonable assumptions or indicate where information might be incomplete.
+                3. Use concise language, avoid unnecessary details.
+                4. 
                 
                 User input: {user_input}
-                Ensure all fields are present and are strings.
-                Title: Aim for a length of 20-50 characters, avoid generic titles. The title should include keywords that describe the issue and relevant context like "what," "where," and "when". 
-                If any field is missing or not a string, return an error message in JSON format.
-                Focus on clarity and completeness. If any information is missing from the user input, make reasonable assumptions or indicate where information might be incomplete."""
+                """

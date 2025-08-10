@@ -37,9 +37,10 @@
 
           <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div class="flex items-center gap-3">
-              <!-- Severity and Environment fields removed -->
             </div>
-
+          <div class="mt-4 text-xs text-slate-500">
+            Tip: paste logs, steps, or quick notes — the generator will try to structure them into Title, Steps, Expected, Actual, Environment and Suggested Fix.
+          </div>
             <div class="flex items-center gap-2">
               <button id="generateBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-300 disabled:opacity-70">
                 <svg id="genSpinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -53,9 +54,6 @@
             </div>
           </div>
 
-          <div class="mt-4 text-xs text-slate-500">
-            Tip: paste logs, steps, or quick notes — the generator will try to structure them into Title, Steps, Expected, Actual, Environment and Suggested Fix.
-          </div>
         </section>
 
         <!-- Output card -->
@@ -99,179 +97,6 @@
     const expandBtn = document.getElementById('expandBtn');
     const clearAll = document.getElementById('clearAll');
 
-    // Utility: parse raw notes for common sections
-    function parseSections(text) {
-      const result = {
-        title: '',
-        steps: '',
-        expected: '',
-        actual: '',
-        environment: '',
-        logs: '',
-        suggested: ''
-      };
-
-      const normalized = text.replace(/\r/g, '');
-      // split into blocks by blank line
-      const blocks = normalized.split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
-
-      // helper to detect labels
-      function extractByLabel(label) {
-        const regex = new RegExp(label + '\\s*[:\\-]\\s*([\\s\\S]+)', 'i');
-        const match = text.match(regex);
-        return match && match[1] ? match[1].trim() : '';
-      }
-
-      // Try to find explicit labeled sections first
-      result.title = extractByLabel('title') || '';
-      result.steps = extractByLabel('steps?') || '';
-      result.expected = extractByLabel('expected') || '';
-      result.actual = extractByLabel('actual') || '';
-      result.environment = extractByLabel('environment|env|platform') || '';
-      result.logs = extractByLabel('logs?|console') || '';
-
-      // If no explicit labels, attempt heuristics
-      if (!result.title && blocks.length) {
-        // Use first short line or first line as title
-        const firstLine = blocks[0].split('\n')[0];
-        if (firstLine.length < 80 && firstLine.split(' ').length <= 10) {
-          result.title = firstLine;
-          // remove title from first block for steps
-          blocks[0] = blocks[0].replace(firstLine, '').trim();
-        }
-      }
-
-      if (!result.steps) {
-        // Try to find lines starting with numbers or "1." or "Step"
-        let lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        const stepLines = lines.filter(l => /^\d+\.|^step\s*\d+|^steps?/i.test(l));
-        if (stepLines.length >= 2) {
-          result.steps = stepLines.join('\n');
-        } else {
-          // as fallback use first block (minus title) as steps-ish
-          if (blocks.length) {
-            result.steps = blocks[0];
-          }
-        }
-      }
-
-      if (!result.expected || !result.actual) {
-        // try to split remaining content into expected/actual using keywords
-        const lower = text.toLowerCase();
-        const idxExpected = lower.indexOf('expected');
-        const idxActual = lower.indexOf('actual');
-        if (idxExpected >= 0 && idxActual >= 0) {
-          if (idxExpected < idxActual) {
-            result.expected = text.slice(idxExpected, idxActual).replace(/expected[:\-]/i, '').trim();
-            result.actual = text.slice(idxActual).replace(/actual[:\-]/i, '').trim();
-          } else {
-            result.actual = text.slice(idxActual, idxExpected).replace(/actual[:\-]/i, '').trim();
-            result.expected = text.slice(idxExpected).replace(/expected[:\-]/i, '').trim();
-          }
-        }
-      }
-
-      // fallback: if expected/actual missing, put a short placeholder
-      if (!result.expected) result.expected = 'Describe the expected behavior.';
-      if (!result.actual) result.actual = 'Describe the actual behavior observed.';
-
-      // environment fallback
-      if (!result.environment) {
-        result.environment = 'Specify browser / OS / app version.';
-      }
-
-      // logs fallback
-      if (!result.logs) {
-        // take last block as logs if it contains words like error/stack
-        const lastBlock = blocks[blocks.length - 1] || '';
-        if (/error|stack|trace|exception/i.test(lastBlock)) {
-          result.logs = lastBlock;
-        } else {
-          result.logs = '';
-        }
-      }
-
-      // suggested fix tries to infer from keywords
-      if (/crash|exception|throw/i.test(text)) {
-        result.suggested = 'Investigate exception stack, validate input sanitization and null-checks.';
-      } else if (/ui|layout|overlap/i.test(text)) {
-        result.suggested = 'Adjust CSS layout or responsive breakpoints; verify container sizes.';
-      } else {
-        result.suggested = '';
-      }
-
-      return result;
-    }
-
-    // Compose markdown-like report
-    function composeReport(raw) {
-      if (!raw || !raw.trim()) {
-        return '';
-      }
-      const sections = parseSections(raw);
-
-      // Build Title
-      const title = sections.title || (raw.split('\n').find(l => l.trim()) || 'Untitled bug').slice(0, 150);
-
-      // Steps: ensure lines are bulleted or numbered
-      function formatSteps(text) {
-        if (!text) return '';
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        // If already numbered, keep them; else create numbered steps
-        const numbered = lines.every(l => /^\d+\./.test(l));
-        if (numbered) return lines.join('\n');
-        // split on sentence-ish punctuation if a single long block
-        if (lines.length === 1 && lines[0].length > 80) {
-          const sentences = lines[0].split(/(?<=\.)\s+/).map(s => s.trim()).filter(Boolean);
-          return sentences.map((s,i) => `${i+1}. ${s}`).join('\n');
-        }
-        return lines.map((l,i) => `${i+1}. ${l}`).join('\n');
-      }
-
-      const reportParts = [
-        `# ${escapeMarkdown(title)}`,
-        '',
-        `**Environment:** ${escapeMarkdown(sections.environment)}`,
-        '',
-        `## Summary`,
-        `${escapeMarkdown(raw.split('\n').slice(0,3).join(' ').trim())}`,
-        '',
-        `## Steps to Reproduce`,
-        formatSteps(sections.steps) || '1. Describe steps to reproduce',
-        '',
-        `## Expected Result`,
-        `${escapeMarkdown(sections.expected)}`,
-        '',
-        `## Actual Result`,
-        `${escapeMarkdown(sections.actual)}`,
-        ''
-      ];
-
-      if (sections.logs) {
-        reportParts.push('## Logs / Console');
-        reportParts.push('```');
-        reportParts.push(sections.logs);
-        reportParts.push('```');
-        reportParts.push('');
-      }
-
-      if (sections.suggested) {
-        reportParts.push('## Suggested Fix');
-        reportParts.push(sections.suggested);
-        reportParts.push('');
-      }
-
-      reportParts.push('---');
-      reportParts.push('*Generated by Bug Report Composer*');
-
-      return reportParts.join('\n');
-    }
-
-    function escapeMarkdown(s) {
-      if (!s) return '';
-      return s.replace(/([_*`])/g, '\\$1');
-    }
-
     // Handlers
     generateBtn.addEventListener('click', async () => {
       const text = rawInput.value;
@@ -285,21 +110,41 @@
         }, 1200);
         return;
       }
+
       generateBtn.disabled = true;
       genSpinner.classList.remove('hidden');
       genLabel.textContent = 'Generating...';
 
-      // Simulate processing delay; in a real app you'd call an API here
-      await new Promise(r => setTimeout(r, 650));
+      try {
+        const response = await fetch('/api/v1/bug-reports', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_input: text
+          }),
+        });
 
-      const report = composeReport(text);
-      output.value = report;
-      output.scrollTop = 0;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-      genSpinner.classList.add('hidden');
-      genLabel.textContent = 'Generate';
-      generateBtn.disabled = false;
-      output.focus();
+        const data = await response.json();
+
+        // Display the formatted_report directly from API
+        output.value = data.formatted_report;
+        output.scrollTop = 0;
+
+      } catch (error) {
+        console.error('Error generating bug report:', error);
+        output.value = 'Error generating bug report. Please try again.';
+      } finally {
+        genSpinner.classList.add('hidden');
+        genLabel.textContent = 'Generate';
+        generateBtn.disabled = false;
+        output.focus();
+      }
     });
 
     copyBtn.addEventListener('click', async () => {
