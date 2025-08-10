@@ -2,6 +2,9 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 
 from .routes import router
 
@@ -25,6 +28,10 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Mount static files
+    static_dir = Path(__file__).parent.parent / "static"
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
     # Include the API router
     app.include_router(router)
 
@@ -33,6 +40,13 @@ def create_app() -> FastAPI:
 
 # Create the app instance
 app = create_app()
+
+
+@app.get("/")
+async def serve_index():
+    """Serve the index.html file."""
+    static_dir = Path(__file__).parent.parent / "static"
+    return FileResponse(static_dir / "index.html")
 
 
 @app.get("/health")

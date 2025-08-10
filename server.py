@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple server startup script for the Bug Reporter API."""
+"""FastAPI server entry point."""
 
 import uvicorn
 from src.api.app import app
