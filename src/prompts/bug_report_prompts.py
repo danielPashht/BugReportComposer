@@ -7,8 +7,6 @@ class BugReportPrompts:
     @staticmethod
     def create_bug_report_prompt(user_input: str) -> str:
         """
-        Create a prompt for the LLM to generate bug report data.
-
         Args:
             user_input: The user's bug description
 
@@ -17,13 +15,15 @@ class BugReportPrompts:
         """
         return f"""You are a bug report formatter. Analyze the following user input and create a structured bug report.
 
-User input: {user_input}
-
-Please provide:
-- A clear, concise title for the bug
-- A detailed description of the issue
-- Step-by-step reproduction instructions
-- What the user expected to happen
-- What actually happened
-
-Focus on clarity and completeness. If any information is missing from the user input, make reasonable assumptions or indicate where information might be incomplete."""
+                User input: {user_input}
+                
+                Provide:
+                - A clear, concise title for the bug
+                - A detailed description of the issue
+                - Step-by-step reproduction instructions, start with an action verb, and be testable actions.
+                - What the user expected to happen
+                - What actually happened
+                
+                Focus on clarity and completeness. 
+                Rewrite vague steps into explicit actions (only if it possible without additional context).
+                """
