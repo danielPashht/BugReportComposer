@@ -1,7 +1,10 @@
 /* Minimalist modern design using CSS Grid
    - Responsive: two-column layout on wide screens, stack on small screens
    - Accessible: focus styles, aria-live for status updates
+   - Enhanced with glassmorphism and modern interactions
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ========== Variables & Reset ========== */
 :root{
@@ -35,10 +38,11 @@ body{
   margin:0;
   background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
   color:var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  line-height:1.45;
+  line-height:1.5;
+  font-size: 1rem;
 }
 
 /* Screen reader only helper */
@@ -49,7 +53,7 @@ body{
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
-/* ========== Grid Layout (using old grid approach for equal forms) ========== */
+/* ========== Grid Layout ========== */
 .app-grid {
   display: grid;
   grid-template-areas:
@@ -65,84 +69,93 @@ body{
   margin: 0 auto;
 }
 
-/* ========== Header with smaller size ========== */
+/* ========== Header with glassmorphism ========== */
 .app-header {
   grid-area: header;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-600) 50%, var(--accent-hover) 100%);
+  backdrop-filter: blur(20px);
   color: var(--bg);
-  padding: 1.2rem; /* Reduced from 2.4rem for smaller header */
-  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
   text-align: center;
   position: relative;
-  box-shadow: var(--shadow);
+  box-shadow:
+    0 8px 32px rgba(203, 166, 247, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .app-header h1 {
-  font-size: 2rem; /* Reduced from 3rem for smaller header */
-  margin-bottom: 0.3rem; /* Reduced spacing */
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 2.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 300; /* Changed to Light 300 */
+  letter-spacing: -0.02em;
   color: var(--bg);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
-  font-size: 1rem; /* Reduced from 1.32rem for smaller header */
+  font-size: 1.125rem;
   opacity: 0.9;
   margin: 0;
   color: var(--bg);
+  font-weight: 100; /* Changed to Thin 100 */
+  font-style: italic; /* Added italic */
+  letter-spacing: -0.01em;
 }
 
+/* ========== Form and Output cards with glassmorphism ========== */
+.app-form, .app-output {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 24px;
+}
 
-/* ========== Form and Output cards (equal sizes) ========== */
 .app-form {
   grid-area: form;
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 18px;
-  transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .app-output {
   grid-area: output;
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
-/* ========== Section Titles - matching style and size ========== */
+/* ========== Section Titles ========== */
 .form-title, .output-title {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 600;
   color: var(--text);
-  margin: 0 0 1rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
+  margin: 0 0 1.25rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  letter-spacing: -0.01em;
 }
 
-/* ========== Footer with GitHub button positioned below ========== */
+/* ========== Footer without background ========== */
 .app-footer {
   grid-area: footer;
-  padding: 12px 18px;
+  padding: 16px 24px;
   color: var(--muted);
   text-align: center;
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
-/* ========== Form inner layout with Clear button positioning ========== */
+/* ========== Form layout ========== */
 .form-grid{
   margin-bottom: 1.5rem;
 }
 
-/* Field styles with relative positioning for Clear button */
 .field{
   display: flex;
   flex-direction: column;
@@ -152,144 +165,99 @@ body{
 .field.full{
   width: 100%;
 }
-.label-text{
-  font-size: 0.86rem;
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-weight: 600;
-}
 
-/* Clear button styling */
-.btn-clear {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: color var(--transition), background-color var(--transition);
-  z-index: 1;
-}
-
-.btn-clear:hover {
-  color: var(--text);
-  background: rgba(108, 112, 134, 0.1);
-}
-
-/* Output toolbar repositioned below output window */
-.output-toolbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  min-height:34px;
-  margin-top: 8px;
-}
-
-/* ========== Inputs with Quiet Cry styling ========== */
-input[type="text"],
-select,
-textarea{
-  width:100%;
-  padding:10px 12px;
-  padding-right: 60px; /* Add space for Clear button */
-  border-radius:10px;
-  border:1px solid var(--border);
+/* ========== Match textarea and output-window styles exactly ========== */
+textarea,
+.output-window {
   background: var(--bg-secondary);
-  font-size:0.95rem;
-  color:var(--text);
-  outline:none;
-  transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
-  resize:vertical;
-  min-height:44px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  padding-right: 60px; /* Room for Clear/Copy buttons */
+  font-size: 0.95rem;
+  color: var(--text);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all var(--transition);
+  font-family: inherit;
+  line-height: 1.5;
+  width: 100%;
+  outline: none;
+  resize: vertical;
+  min-height: 140px;
 }
 
-/* slightly larger textarea feel */
-textarea { min-height:110px; line-height:1.4; }
+.output-window {
+  overflow: auto;
+  flex: 1;
+  min-height: 240px;
+  resize: none;
+}
 
-/* Focus / active */
-input:focus, select:focus, textarea:focus{
+textarea { min-height: 140px; }
+
+/* ========== Consistent focus states ========== */
+textarea:focus,
+.output-window:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(203, 166, 247, 0.15);
+  box-shadow:
+    0 0 0 4px rgba(203, 166, 247, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
   background: var(--card);
 }
 
-/* ========== Buttons with Quiet Cry styling ========== */
-.actions{
-  margin-top:14px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.btn{
-  border:0;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  font-size:0.95rem;
-  transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition);
-  background:transparent;
-  color:var(--text);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn.small{
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  border-radius: 20px; /* More rounded for smaller profile */
-  min-width: 80px; /* Smaller background */
-}
-
-.btn.primary{
-  background: linear-gradient(135deg, var(--accent), var(--accent-600));
-  color: var(--bg);
-  box-shadow: 0 8px 20px rgba(203, 166, 247, 0.3);
-}
-.btn.primary:hover{ 
-  transform: translateY(-2px); 
-  box-shadow: 0 12px 25px rgba(203, 166, 247, 0.4);
-}
-
-.btn.ghost{
-  background: rgba(108, 112, 134, 0.1);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-.btn.ghost:hover{
-  background: var(--card-hover);
+/* ========== Hover effects for interactivity ========== */
+textarea:hover,
+.output-window:hover {
+  border-color: var(--accent-hover);
   transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px rgba(203, 166, 247, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn:active{ transform: translateY(0); }
-
-/* GitHub button specific styling - smaller and more rounded */
-.github-btn {
-  background: linear-gradient(135deg, var(--accent-hover), var(--accent));
-  color: var(--bg);
-  box-shadow: 0 2px 8px rgba(245, 194, 231, 0.2); /* Reduced shadow for less prominence */
-  border-radius: 16px; /* More rounded */
-  padding: 4px 10px; /* Smaller padding */
-  font-size: 0.75rem; /* Smaller text */
-  min-width: 60px; /* Smaller background */
+/* ========== Placeholder styling ========== */
+textarea::placeholder {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.8;
 }
 
-.github-btn:hover {
-  transform: translateY(-1px); /* Less movement */
-  box-shadow: 0 3px 10px rgba(245, 194, 231, 0.25);
+.generated-text:empty::before {
+  content: "Generated report will appear here...";
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.8;
 }
 
-/* ========== Output styles ========== */
+/* ========== Clear/Copy button styling ========== */
+.btn-clear {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(49, 50, 68, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all var(--transition);
+  z-index: 2;
+  font-weight: 500;
+}
+
+.btn-clear:hover {
+  color: var(--text);
+  background: rgba(69, 71, 90, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== Output container ========== */
 .output-container {
   position: relative;
   flex: 1;
@@ -298,70 +266,117 @@ input:focus, select:focus, textarea:focus{
 }
 
 .output-status-container {
-  min-height: 34px;
+  min-height: 40px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .output-status{
-  font-size:0.9rem;
-  color:var(--muted);
-}
-
-/* Output window with Quiet Cry styling */
-.output-window{
-  background: var(--bg-secondary);
-  border-radius:10px;
-  border:1px solid var(--border);
-  padding:14px;
-  padding-right: 60px; /* Add space for Copy button */
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-  overflow:auto;
-  flex: 1;
-  min-height:220px;
-  outline:none;
-}
-
-/* Copy button positioned in output container like Clear button */
-.output-container .btn-clear {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  background: none;
-  border: none;
+  font-size: 0.9rem;
   color: var(--muted);
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: color var(--transition), background-color var(--transition);
-  z-index: 1;
+  font-weight: 500;
 }
 
-.output-container .btn-clear:hover {
-  color: var(--text);
-  background: rgba(108, 112, 134, 0.1);
-}
 .generated-text{
-  margin:0;
-  white-space:pre-wrap;
-  word-wrap:break-word;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-  font-size:0.95rem;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+  font-size: 0.9rem;
   color: var(--text);
-  line-height:1.5;
+  line-height: 1.6;
 }
 
-.generated-text:empty::before {
-  content: "Generated report will appear here...";
-  color: var(--muted);
-  font-style: italic;
+/* ========== Enhanced button styling ========== */
+.actions{
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
-/* Focus ring for output window */
-.output-window:focus{
-  box-shadow: 0 0 0 4px rgba(203, 166, 247, 0.15);
-  border-color: var(--accent);
+.btn{
+  border: 0;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all var(--transition);
+  background: transparent;
+  color: var(--text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+.btn.small{
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  border-radius: 20px;
+  min-width: 90px;
+  backdrop-filter: blur(10px);
+}
+
+/* ========== Enhanced primary button with glassmorphism ========== */
+.btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-600));
+  color: var(--bg);
+  box-shadow:
+    0 8px 20px rgba(203, 166, 247, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn.primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 12px 28px rgba(203, 166, 247, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn.primary:active {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.btn.ghost{
+  background: rgba(108, 112, 134, 0.1);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.btn.ghost:hover{
+  background: rgba(69, 71, 90, 0.8);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== GitHub button with enhanced styling ========== */
+.github-btn {
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+  color: var(--bg);
+  box-shadow:
+    0 4px 12px rgba(245, 194, 231, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  min-width: 70px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.github-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 6px 16px rgba(245, 194, 231, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* ========== Responsive Design ========== */
@@ -374,16 +389,24 @@ input:focus, select:focus, textarea:focus{
       "footer";
     grid-template-columns: 1fr;
     gap: 1rem;
-    padding: 0.5rem;
+    padding: 1rem;
+  }
+
+  .app-header {
+    padding: 1.25rem 1.5rem;
   }
 
   .app-header h1 {
-    font-size: 1.8rem; /* Adjusted for mobile */
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
   }
 
   .app-form,
   .app-output {
-    padding: 14px;
+    padding: 20px;
   }
 
   .actions {
@@ -396,22 +419,20 @@ input:focus, select:focus, textarea:focus{
 
   .btn-clear {
     position: static;
-    margin-top: 8px;
+    margin-top: 12px;
     align-self: flex-end;
-  }
-
-  .output-toolbar {
-    flex-direction: column;
-    align-items: stretch;
   }
 }
 
 /* ========== Accessibility ========== */
 :focus {
-  outline: 3px solid rgba(37,99,235,0.14);
+  outline: 3px solid rgba(203, 166, 247, 0.5);
   outline-offset: 2px;
 }
 
-/* Utilities */
-label { cursor:text; }
-small { color:var(--muted); }
+/* ========== Utilities ========== */
+label { cursor: text; }
+small {
+  color: var(--muted);
+  font-weight: 400;
+}
