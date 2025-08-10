@@ -29,24 +29,20 @@ def main():
         help="Description of the bug or issue to be formatted"
     )
 
-    # Parse arguments
     try:
         args = parser.parse_args()
     except SystemExit:
         return
 
-    # Validate input
     if not args.input_text.strip():
         print("Error: Input text cannot be empty.")
         sys.exit(1)
 
     try:
-        # Initialize services using dependency injection
         llm_service = GeminiService()
         formatter = JiraFormatter()
         bug_service = BugReportService(llm_service, formatter)
 
-        # Process the bug report using our architecture
         bug_service.process_bug_report(args.input_text)
 
     except BugReporterError as e:
