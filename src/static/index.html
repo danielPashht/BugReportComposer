@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bug Report Generator</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+  <div class="app-grid">
+    <header class="app-header" role="banner">
+      <div>
+        <h1>Bug Report Generator</h1>
+        <p class="subtitle">Write a description and it will generate a detailed and formatted bug report for you.</p>
+      </div>
+    </header>
+
+    <section class="app-form" aria-labelledby="form-heading">
+      <h2 id="form-heading" class="form-title">Problem Description</h2>
+
+      <form id="bugForm" autocomplete="off">
+        <div class="form-grid">
+          <label class="field full">
+            <textarea name="user_input" rows="8" placeholder="Describe the bug you encountered..." required></textarea>
+            <button type="reset" class="btn-clear">Clear</button>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" id="generateBtn">Generate</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="app-output" aria-labelledby="output-heading">
+      <h2 id="output-heading" class="output-title">Generated Report</h2>
+
+      <div class="output-container">
+        <div class="output-window" tabindex="0" role="region" aria-label="Generated bug report">
+          <pre id="generatedText" class="generated-text" contenteditable="false">
+<!-- Generated report will appear here -->
+          </pre>
+        </div>
+        <button class="btn-clear" id="copyBtn" aria-label="Copy generated report">Copy</button>
+      </div>
+
+      <div class="output-status-container">
+        <span class="output-status" aria-live="polite"></span>
+      </div>
+    </aside>
+
+    <footer class="app-footer">
+      <small>AI-powered bug report generation</small>
+      <a href="https://github.com/danielPashht" target="_blank" rel="noopener noreferrer" class="btn small github-btn">
+        Github
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    const form = document.getElementById('bugForm');
+    const generatedText = document.getElementById('generatedText');
+    const status = document.querySelector('.output-status');
+    const copyBtn = document.getElementById('copyBtn');
+    const generateBtn = document.getElementById('generateBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const userInput = formData.get('user_input');
+
+      if (!userInput || userInput.trim() === '') {
+        status.textContent = 'Please enter a bug description';
+        setTimeout(() => status.textContent = '', 3000);
+        return;
+      }
+
+      // Disable button and show loading state
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+      status.textContent = 'Generating bug report...';
+      generatedText.textContent = '';
+
+      try {
+        const response = await fetch('/api/v1/bug-reports', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_input: userInput.trim()
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Display the formatted report
+        generatedText.textContent = data.formatted_report || `
+Title: ${data.title}
+
+Description: ${data.description}
+
+Steps to Reproduce:
+${data.steps}
+
+Expected Result:
+${data.expected_result}
+
+Actual Result:
+${data.actual_result}
+        `.trim();
+
+        status.textContent = 'Generated successfully!';
+        setTimeout(() => status.textContent = '', 3000);
+
+        // Focus output for easy copy
+        document.querySelector('.output-window').focus();
+
+      } catch (error) {
+        console.error('Error generating bug report:', error);
+        status.textContent = `Error: ${error.message}`;
+        generatedText.textContent = 'Failed to generate bug report. Please try again.';
+        setTimeout(() => status.textContent = '', 5000);
+      } finally {
+        // Re-enable button
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate';
+      }
+    });
+
+    // Copy functionality
+    copyBtn.addEventListener('click', () => {
+      const text = generatedText.textContent;
+      if (text && text.trim() !== '' && text.trim() !== '<!-- Generated report will appear here -->') {
+        navigator.clipboard.writeText(text).then(() => {
+          status.textContent = 'Copied!';
+          setTimeout(() => status.textContent = '', 2000);
+        }).catch(() => {
+          status.textContent = 'Copy failed';
+          setTimeout(() => status.textContent = '', 2000);
+        });
+      }
+    });
+
+    // Reset functionality
+    form.addEventListener('reset', () => {
+      generatedText.textContent = '';
+      status.textContent = '';
+    });
+  </script>
+</body>
+</html>
