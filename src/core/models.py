@@ -2,19 +2,6 @@
 
 from dataclasses import dataclass
 from typing import Dict, Any
-from pydantic import BaseModel, Field, ConfigDict
-
-
-class BugReportSchema(BaseModel):
-    """Pydantic schema for structured Gemini responses."""
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    title: str
-    description_of_the_issue: str = Field(alias="description")
-    steps: str
-    expected_result: str
-    actual_result: str
 
 
 @dataclass
@@ -46,17 +33,6 @@ class BugReport:
             steps=data.get("Steps", ""),
             expected_result=data.get("Expected result", ""),
             actual_result=data.get("Actual result", "")
-        )
-
-    @classmethod
-    def from_schema(cls, schema: BugReportSchema) -> 'BugReport':
-        """Create a BugReport instance from a BugReportSchema."""
-        return cls(
-            title=schema.title,
-            description=schema.description_of_the_issue,
-            steps=schema.steps,
-            expected_result=schema.expected_result,
-            actual_result=schema.actual_result
         )
 
     def __str__(self) -> str:

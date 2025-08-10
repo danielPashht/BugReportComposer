@@ -39,26 +39,19 @@ async def create_bug_report(
         HTTPException: If the bug report generation fails
     """
     try:
-        # Generate the formatted report
-        formatted_report = service.generate_formatted_report(request.user_input)
-
-        if formatted_report is None:
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to generate bug report"
-            )
-
-        # Also get the structured bug report for individual fields
-        from ..prompts.bug_report_prompts import BugReportPrompts
-        prompt = BugReportPrompts.create_bug_report_prompt(request.user_input)
+        # Generate the structured bug report
         bug_report = service.llm_service.generate_bug_report(request.user_input)
-
+        
         if bug_report is None:
             raise HTTPException(
                 status_code=500,
-                detail="Failed to generate structured bug report"
+                detail="Failed to generate bug report. Please try again."
             )
 
+        # Generate the formatted report
+        formatted_report = service.formatter.format(bug_report)
+
+        # Return the response with both structured and formatted data
         return BugReportResponse(
             title=bug_report.title,
             description=bug_report.description,
@@ -76,5 +69,5 @@ async def create_bug_report(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"An unexpected error occurred: {str(e)}"
         )
