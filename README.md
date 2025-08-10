@@ -163,7 +163,8 @@ src/
 ### Environment Variables
 
 - `GOOGLE_API_KEY`: Required. Your Google Gemini API key
-- `LOG_LEVEL`: Optional. Logging level (default: INFO)
+- `GEMINI_MODEL`: Optional. Default is `gemini-1.5-flash`
+- `MAX_RETRIES`: Optional. Default is `3`. Number of retries for AI requests
 
 ### Development
 
