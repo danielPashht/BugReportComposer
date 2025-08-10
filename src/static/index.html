@@ -19,11 +19,11 @@
       <header class="mb-6 flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-slate-900">Bug Report Composer</h1>
-          <p class="text-sm text-slate-500 mt-1">Turn raw QA notes into a clean, structured bug report.</p>
+          <p class="text-sm text-slate-500 mt-1">Turn QA notes into a clean, structured bug report.</p>
         </div>
         <div class="flex items-center gap-3">
           <button id="clearAll" class="text-xs px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Clear All</button>
-          <a href="https://github.com/danielPashht" target="_blank" rel="noopener noreferrer" class="text-xs px-3 py-1 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition-colors">GitHub</a>
+          <a href="https://github.com/danielPashht/BugReportComposer" target="_blank" rel="noopener noreferrer" class="text-xs px-3 py-1 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition-colors">GitHub</a>
           <a href="#" class="text-xs text-slate-500">Help</a>
         </div>
       </header>
@@ -39,7 +39,7 @@
             <div class="flex items-center gap-3">
             </div>
           <div class="mt-4 text-xs text-slate-500">
-            Tip: paste logs, steps, or quick notes — the generator will try to structure them into Title, Steps, Expected, Actual, Environment and Suggested Fix.
+            Tip: paste logs, environment, steps, quick notes — the generator will try to structure them into valid Bug report. No need for formatting!
           </div>
             <div class="flex items-center gap-2">
               <button id="generateBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-300 disabled:opacity-70">
@@ -69,7 +69,17 @@
             </div>
           </div>
 
-          <textarea id="output" class="mt-3 h-64 w-full rounded-md border border-slate-200 bg-gray-900 text-green-100 p-4 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-300" readonly aria-live="polite" ></textarea>
+          <textarea id="output" class="mt-3 h-64 w-full rounded-md border border-slate-200 bg-gray-900 text-green-100 p-4 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-300" readonly aria-live="polite" placeholder="        \   /
+        .\-/.
+    /\ ()   ()
+   /  \/~---~\.-~^-.
+.-~^-./   |   \---.
+     {    |    }   \
+   .-~\   |   /~-.
+  /    \  A  /    \
+        \/ \/
+
+Bug report will appear here"></textarea>
 
           <div class="mt-3 flex items-center justify-between gap-3 text-xs">
             <div class="text-slate-500">Format: Markdown-ready, copyable.</div>
