@@ -57,12 +57,6 @@ class BugReport:
             actual_result=schema.actual_result
         )
 
-    def validate(self) -> bool:
-        """Validate that all required fields are present and non-empty."""
-        return all([
-            self.title.strip(),
-            self.description.strip(),
-            self.steps.strip(),
-            self.expected_result.strip(),
-            self.actual_result.strip()
-        ])
+    def __str__(self) -> str:
+        """Return a string representation of the bug report."""
+        return f"BugReport(title='{self.title}', description='{self.description[:50]}...')"
