@@ -16,10 +16,9 @@ def create_app() -> FastAPI:
         description="API for generating structured bug reports from user input",
         version="1.0.0",
         docs_url="/docs",
-        redoc_url="/redoc"
+        redoc_url="/redoc",
     )
 
-    # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],  # Configure appropriately for production
@@ -32,13 +31,11 @@ def create_app() -> FastAPI:
     static_dir = Path(__file__).parent.parent / "static"
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
-    # Include the API router
     app.include_router(router)
 
     return app
 
 
-# Create the app instance
 app = create_app()
 
 

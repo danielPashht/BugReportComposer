@@ -2,4 +2,4 @@
 
 from .bug_report_prompts import BugReportPrompts
 
-__all__ = ['BugReportPrompts']
+__all__ = ["BugReportPrompts"]

@@ -3,4 +3,4 @@
 from .base_formatter import BaseFormatter
 from .jira_formatter import JiraFormatter
 
-__all__ = ['BaseFormatter', 'JiraFormatter']
+__all__ = ["BaseFormatter", "JiraFormatter"]

@@ -26,4 +26,3 @@ class Settings:
 
 # Global settings instance
 settings = Settings()
-

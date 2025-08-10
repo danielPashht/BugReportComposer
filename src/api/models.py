@@ -7,10 +7,7 @@ class BugReportRequest(BaseModel):
     """Request model for bug report generation."""
 
     user_input: str = Field(
-        ...,
-        description="User's description of the bug",
-        min_length=1,
-        max_length=5000
+        ..., description="User's description of the bug", min_length=1, max_length=5000
     )
 
     class Config:
@@ -39,6 +36,6 @@ class BugReportResponse(BaseModel):
                 "steps": "1. Navigate to the main page\n2. Open browser developer tools\n3. Check the console tab",
                 "expected_result": "Header should be visible on the main page with no console errors",
                 "actual_result": "Header is missing and 404 error appears in JS console",
-                "formatted_report": "**Title:** Missing Header on Main Page...\n\n**Description:**..."
+                "formatted_report": "**Title:** Missing Header on Main Page...\n\n**Description:**...",
             }
         }

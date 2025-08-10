@@ -27,12 +27,11 @@ class CLI:
             Examples:
               python -m src.cli.main "App closes after clicking save button"
               python -m src.cli.main "Login form doesn't validate email addresses properly"
-                        """
+                        """,
         )
 
         parser.add_argument(
-            "input_text",
-            help="Description of the bug or issue to be formatted"
+            "input_text", help="Description of the bug or issue to be formatted"
         )
 
         return parser

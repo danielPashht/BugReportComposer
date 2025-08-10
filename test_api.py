@@ -34,12 +34,16 @@ def test_bug_report_api():
             print(f"Steps: {response_data.get('steps', 'N/A')}")
             print(f"Expected Result: {response_data.get('expected_result', 'N/A')}")
             print(f"Actual Result: {response_data.get('actual_result', 'N/A')}")
-            print(f"\nFormatted Report:\n{response_data.get('formatted_report', 'N/A')}")
+            print(
+                f"\nFormatted Report:\n{response_data.get('formatted_report', 'N/A')}"
+            )
         else:
             print(f"\nERROR! Response: {response.text}")
 
     except requests.exceptions.ConnectionError:
-        print("ERROR: Could not connect to the server. Make sure it's running on http://localhost:8000")
+        print(
+            "ERROR: Could not connect to the server. Make sure it's running on http://localhost:8000"
+        )
         return False
     except requests.exceptions.Timeout:
         print("ERROR: Request timed out")

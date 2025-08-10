@@ -3,4 +3,4 @@
 from .gemini_service import GeminiService
 from .bug_report_service import BugReportService
 
-__all__ = ['GeminiService', 'BugReportService']
+__all__ = ["GeminiService", "BugReportService"]

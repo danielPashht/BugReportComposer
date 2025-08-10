@@ -21,12 +21,11 @@ def main():
         Examples:
           python main.py "App closes after clicking save button"
           python main.py "Login form doesn't validate email addresses properly"
-                """
+                """,
     )
 
     parser.add_argument(
-        "input_text",
-        help="Description of the bug or issue to be formatted"
+        "input_text", help="Description of the bug or issue to be formatted"
     )
 
     try:
