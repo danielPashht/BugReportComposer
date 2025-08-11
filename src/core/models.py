@@ -16,7 +16,7 @@ class BugReport:
         """Convert the bug report to a dictionary."""
         return {
             "Title": self.title,
-            "Description of the issue": self.description,
+            "Description": self.description,
             "Steps": self.steps,
             "Expected result": self.expected_result,
             "Actual result": self.actual_result,
@@ -27,7 +27,7 @@ class BugReport:
         """Create a BugReport instance from a dictionary."""
         return cls(
             title=data.get("Title", ""),
-            description=data.get("Description of the issue", ""),
+            description=data.get("Description", ""),
             steps=data.get("Steps", ""),
             expected_result=data.get("Expected result", ""),
             actual_result=data.get("Actual result", ""),

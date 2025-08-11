@@ -17,14 +17,15 @@ class BugReportPrompts:
                 You must respond ONLY with valid JSON in the following structure:
                 {{
                   "Title": "string",
-                  "Description of the issue": "string", 
+                  "Description": "string", 
                   "Steps": "string",
                   "Expected result": "string",
                   "Actual result": "string"
                 }}
                 DO NOT include any text outside JSON!
                 
-                Если описание на Русском, то ответ должен быть на русском языке. Кроме Titles. 
+                Если текст описания на Русском: ответ должен быть на русском языке! Кроме Titles.
+                Если текст описания на Английском: ответ должен быть на английском языке!
                 
                 FORMAT RULES:
                 1. Ensure all fields are present and are strings.
