@@ -33,7 +33,7 @@ class TestBugReportService:
             description="Test description",
             steps="1. Test step",
             expected_result="Expected result",
-            actual_result="Actual result"
+            actual_result="Actual result",
         )
 
         mock_llm_service.generate_bug_report.return_value = mock_bug_report
@@ -69,7 +69,9 @@ class TestBugReportService:
 
         service = BugReportService(mock_llm_service, mock_formatter)
 
-        with pytest.raises(BugReporterError, match="Failed to generate formatted report"):
+        with pytest.raises(
+            BugReporterError, match="Failed to generate formatted report"
+        ):
             service.generate_formatted_report("Test user input")
 
     def test_generate_formatted_report_formatter_error(self):
@@ -82,7 +84,7 @@ class TestBugReportService:
             description="Test description",
             steps="1. Test step",
             expected_result="Expected result",
-            actual_result="Actual result"
+            actual_result="Actual result",
         )
 
         mock_llm_service.generate_bug_report.return_value = mock_bug_report
@@ -90,5 +92,7 @@ class TestBugReportService:
 
         service = BugReportService(mock_llm_service, mock_formatter)
 
-        with pytest.raises(BugReporterError, match="Failed to generate formatted report"):
+        with pytest.raises(
+            BugReporterError, match="Failed to generate formatted report"
+        ):
             service.generate_formatted_report("Test user input")

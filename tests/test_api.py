@@ -15,8 +15,8 @@ class TestBugReportAPI:
         """Set up test client."""
         self.client = TestClient(app)
 
-    @patch('src.api.routes.GeminiService')
-    @patch('src.api.routes.JiraFormatter')
+    @patch("src.api.routes.GeminiService")
+    @patch("src.api.routes.JiraFormatter")
     def test_bug_report_creation_success(self, mock_formatter_class, mock_gemini_class):
         """Test successful bug report creation via API."""
         # Setup mocks
@@ -31,7 +31,7 @@ class TestBugReportAPI:
             description="Test description",
             steps="1. Test step",
             expected_result="Expected result",
-            actual_result="Actual result"
+            actual_result="Actual result",
         )
 
         mock_gemini.generate_bug_report.return_value = mock_bug_report
@@ -40,8 +40,7 @@ class TestBugReportAPI:
         client = TestClient(app)
 
         response = client.post(
-            "/api/v1/bug-reports",
-            json={"user_input": "Test bug description"}
+            "/api/v1/bug-reports", json={"user_input": "Test bug description"}
         )
 
         assert response.status_code == 200
@@ -50,9 +49,11 @@ class TestBugReportAPI:
         assert data["description"] == "Test description"
         assert data["formatted_report"] == "Formatted bug report"
 
-    @patch('src.api.routes.GeminiService')
-    @patch('src.api.routes.JiraFormatter')
-    def test_bug_report_gemini_service_error(self, mock_formatter_class, mock_gemini_class):
+    @patch("src.api.routes.GeminiService")
+    @patch("src.api.routes.JiraFormatter")
+    def test_bug_report_gemini_service_error(
+        self, mock_formatter_class, mock_gemini_class
+    ):
         """Test API handling of Gemini service errors."""
         mock_gemini = Mock()
         mock_formatter = Mock()
@@ -64,16 +65,17 @@ class TestBugReportAPI:
         client = TestClient(app)
 
         response = client.post(
-            "/api/v1/bug-reports",
-            json={"user_input": "Test bug description"}
+            "/api/v1/bug-reports", json={"user_input": "Test bug description"}
         )
 
         assert response.status_code == 500
         assert "Bug report generation failed" in response.json()["detail"]
 
-    @patch('src.api.routes.GeminiService')
-    @patch('src.api.routes.JiraFormatter')
-    def test_bug_report_gemini_returns_none(self, mock_formatter_class, mock_gemini_class):
+    @patch("src.api.routes.GeminiService")
+    @patch("src.api.routes.JiraFormatter")
+    def test_bug_report_gemini_returns_none(
+        self, mock_formatter_class, mock_gemini_class
+    ):
         """Test API handling when Gemini service returns None."""
         mock_gemini = Mock()
         mock_formatter = Mock()
@@ -85,15 +87,14 @@ class TestBugReportAPI:
         client = TestClient(app)
 
         response = client.post(
-            "/api/v1/bug-reports",
-            json={"user_input": "Test bug description"}
+            "/api/v1/bug-reports", json={"user_input": "Test bug description"}
         )
 
         assert response.status_code == 500
         assert "Failed to generate bug report" in response.json()["detail"]
 
-    @patch('src.api.routes.GeminiService')
-    @patch('src.api.routes.JiraFormatter')
+    @patch("src.api.routes.GeminiService")
+    @patch("src.api.routes.JiraFormatter")
     def test_bug_report_formatter_error(self, mock_formatter_class, mock_gemini_class):
         """Test API handling of formatter errors."""
         mock_gemini = Mock()
@@ -106,7 +107,7 @@ class TestBugReportAPI:
             description="Test description",
             steps="1. Test step",
             expected_result="Expected result",
-            actual_result="Actual result"
+            actual_result="Actual result",
         )
 
         mock_gemini.generate_bug_report.return_value = mock_bug_report
@@ -115,8 +116,7 @@ class TestBugReportAPI:
         client = TestClient(app)
 
         response = client.post(
-            "/api/v1/bug-reports",
-            json={"user_input": "Test bug description"}
+            "/api/v1/bug-reports", json={"user_input": "Test bug description"}
         )
 
         assert response.status_code == 500
@@ -127,10 +127,7 @@ class TestBugReportAPI:
         client = TestClient(app)
 
         # Missing required field
-        response = client.post(
-            "/api/v1/bug-reports",
-            json={}
-        )
+        response = client.post("/api/v1/bug-reports", json={})
 
         assert response.status_code == 422  # Validation error
 

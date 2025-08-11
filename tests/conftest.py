@@ -7,7 +7,7 @@ import sys
 import os
 
 # Add the src directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from src.api.app import app
 
@@ -21,17 +21,17 @@ def client():
 @pytest.fixture
 def mock_gemini_service():
     """Mock the Gemini service for testing."""
-    with patch('src.services.gemini_service.GeminiService') as mock:
+    with patch("src.services.gemini_service.GeminiService") as mock:
         mock_instance = Mock()
         mock.return_value = mock_instance
-        
+
         # Mock a successful response
         mock_instance.generate_bug_report.return_value = {
             "title": "Test Bug Title",
             "description": "Test bug description",
             "steps": "1. Open page\n2. Look for header",
             "expected_result": "Header should be visible",
-            "actual_result": "Header is missing, 404 error in console"
+            "actual_result": "Header is missing, 404 error in console",
         }
         yield mock_instance
 
@@ -55,5 +55,5 @@ def sample_bug_report_response():
         "actual_result": "Header is missing and 404 error appears in console",
         "severity": "medium",
         "priority": "high",
-        "formatted_report": "**Bug Report**\n\n**Title:** Missing Header on Main Page with 404 Console Error\n..."
+        "formatted_report": "**Bug Report**\n\n**Title:** Missing Header on Main Page with 404 Console Error\n...",
     }

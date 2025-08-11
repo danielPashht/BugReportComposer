@@ -32,9 +32,9 @@ class TestBugReportSchemas:
             steps="1. Step one\n2. Step two",
             expected_result="Expected result",
             actual_result="Actual result",
-            formatted_report="Formatted report text"
+            formatted_report="Formatted report text",
         )
-        
+
         assert response.title == "Test Bug"
         assert response.description == "Test description"
         assert response.formatted_report == "Formatted report text"
@@ -55,9 +55,9 @@ class TestBugReportModel:
             description="Test description",
             steps="1. Step one\n2. Step two",
             expected_result="Expected",
-            actual_result="Actual"
+            actual_result="Actual",
         )
-        
+
         assert bug_report.title == "Test Bug"
         assert bug_report.description == "Test description"
         assert bug_report.steps == "1. Step one\n2. Step two"
@@ -69,9 +69,9 @@ class TestBugReportModel:
             description="Test description",
             steps="1. Step one",
             expected_result="Expected",
-            actual_result="Actual"
+            actual_result="Actual",
         )
-        
+
         result = bug_report.to_dict()
         assert isinstance(result, dict)
         assert result["Title"] == "Test Bug"

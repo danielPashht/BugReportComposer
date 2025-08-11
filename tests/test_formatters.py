@@ -23,11 +23,11 @@ class TestJiraFormatter:
             description="Test description",
             steps="1. Step one\n2. Step two",
             expected_result="Expected result",
-            actual_result="Actual result"
+            actual_result="Actual result",
         )
-        
+
         formatted = formatter.format(bug_report)
-        
+
         assert isinstance(formatted, str)
         assert len(formatted) > 0
         assert "Test Bug" in formatted
@@ -42,9 +42,9 @@ class TestJiraFormatter:
             description="Test description",
             steps="",
             expected_result="Expected result",
-            actual_result="Actual result"
+            actual_result="Actual result",
         )
-        
+
         formatted = formatter.format(bug_report)
         assert isinstance(formatted, str)
         assert "Test Bug" in formatted
@@ -57,9 +57,9 @@ class TestJiraFormatter:
             description="Description with [brackets] and {braces}",
             steps="1. Step with | pipe\n2. Step with _ underscore",
             expected_result="Expected with ~ tilde",
-            actual_result="Actual with ^ caret"
+            actual_result="Actual with ^ caret",
         )
-        
+
         formatted = formatter.format(bug_report)
         assert isinstance(formatted, str)
         assert len(formatted) > 0
@@ -75,18 +75,20 @@ class TestBaseFormatter:
 
     def test_base_formatter_subclass_must_implement_format(self):
         """Test that BaseFormatter subclasses must implement format method."""
+
         class IncompleteFormatter(BaseFormatter):
             pass
-        
+
         with pytest.raises(TypeError):
             IncompleteFormatter()
 
     def test_base_formatter_valid_subclass(self):
         """Test that valid BaseFormatter subclass can be created."""
+
         class ValidFormatter(BaseFormatter):
             def format(self, bug_report):
                 return "formatted"
-        
+
         formatter = ValidFormatter()
         assert formatter is not None
         assert formatter.format(None) == "formatted"
