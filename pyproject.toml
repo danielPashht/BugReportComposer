@@ -1,4 +1,4 @@
-[build-system]
+"""Tests package for bug reporter application."""
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
@@ -29,14 +29,21 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "click>=8.0.0",
     "pydantic>=2.0.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "httpx>=0.24.0",
+    "requests>=2.31.0",
     "black>=23.0.0",
     "flake8>=6.0.0",
+    "ruff>=0.1.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
 ]

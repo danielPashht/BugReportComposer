@@ -17,3 +17,13 @@ class ValidationError(BugReporterError):
     """Exception raised when validation fails."""
 
     pass
+
+
+class BugReportServiceError:
+    pass
+
+
+class ConfigurationError(BugReporterError):
+    """Exception raised when there's a configuration error."""
+
+    pass
