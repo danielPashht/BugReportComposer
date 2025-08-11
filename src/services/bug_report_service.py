@@ -53,20 +53,13 @@ class BugReportService:
         Args:
             user_input: The user's description of the bug
         """
-        print("Generating bug report...")
-
         try:
             formatted_report = self.generate_formatted_report(user_input)
-
-            if formatted_report is None:
-                print("Failed to generate bug report. Please try again.")
-                return
-
-            print("\n--- FORMATTED BUG REPORT ---")
-            print(formatted_report)
-            print("---------------------------")
-
-        except BugReporterError as e:
-            print(f"Error: {e}")
+            if formatted_report:
+                print("Generated Bug Report:")
+                print("=" * 50)
+                print(formatted_report)
+            else:
+                print("Failed to generate bug report")
         except Exception as e:
-            print(f"Unexpected error: {e}")
+            print(f"Error processing bug report: {e}")
