@@ -27,7 +27,8 @@ class JiraFormatter(BaseFormatter):
 
         return "\n\n".join(formatted_sections)
 
-    def _format_jira_field(self, label: str, value: str) -> str:
+    @staticmethod
+    def _format_jira_field(label: str, value: str) -> str:
         """
         Format a field specifically for Jira.
 

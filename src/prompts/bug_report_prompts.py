@@ -23,6 +23,9 @@ class BugReportPrompts:
                   "Actual result": "string"
                 }}
                 DO NOT include any text outside JSON!
+                
+                Если описание на Русском, то ответ должен быть на русском языке. Кроме Titles. 
+                
                 FORMAT RULES:
                 1. Ensure all fields are present and are strings.
                 2. If any field is missing or not a string, return an error message in JSON format.
@@ -31,7 +34,6 @@ class BugReportPrompts:
                 2. Focus on clarity and completeness. If any information is missing from the user input, 
                 make reasonable assumptions or indicate where information might be incomplete.
                 3. Use concise language, avoid unnecessary details.
-                4. 
                 
                 User input: {user_input}
                 """
