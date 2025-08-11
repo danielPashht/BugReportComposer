@@ -75,4 +75,4 @@ class TestBugReportModel:
         result = bug_report.to_dict()
         assert isinstance(result, dict)
         assert result["Title"] == "Test Bug"
-        assert result["Description of the issue"] == "Test description"
+        assert result["Description"] == "Test description"

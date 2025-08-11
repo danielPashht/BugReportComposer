@@ -37,7 +37,7 @@ class TestGeminiService:
         mock_model = MagicMock()
         mock_response = MagicMock()
         # Include all required fields for BugReportSchema with correct aliases
-        mock_response.text = """{"Title": "Test Bug", "Description of the issue": "Test description", "Steps": "1. Test step", "Expected result": "Expected", "Actual result": "Actual"}"""
+        mock_response.text = """{"Title": "Test Bug", "Description": "Test description", "Steps": "1. Test step", "Expected result": "Expected", "Actual result": "Actual"}"""
         mock_model.generate_content.return_value = mock_response
         mock_genai.GenerativeModel.return_value = mock_model
 
