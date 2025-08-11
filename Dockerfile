@@ -20,8 +20,11 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -e .
+
+# Copy application code
 COPY src/ ./src/
 COPY main.py .
+COPY server.py .
 
 # Create a non-root user for security
 RUN useradd --create-home --shell /bin/bash --uid 1000 app \
@@ -32,18 +35,12 @@ USER app
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Expose port (if your app will have a web interface later)
-EXPOSE 8000
-
-# Expose port (if your app will have a web interface later)
+# Expose port
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import src; print('OK')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
 
-# Set the entrypoint
-ENTRYPOINT ["python", "-m", "src"]
-
-# Default command (can be overridden)
-CMD ["--help"]
+# Start the web server
+CMD ["python", "server.py"]
